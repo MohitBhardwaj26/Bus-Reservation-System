@@ -6,10 +6,6 @@ import com.mohit.brs.model.entity.User;
 import com.mohit.brs.model.request.UserRegistrationDto;
 import com.mohit.brs.repository.RoleRepository;
 import com.mohit.brs.repository.UserRepository;
-import jakarta.persistence.ManyToMany;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import org.hibernate.sql.ast.tree.expression.Collation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -19,11 +15,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 @Service
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
 
 
     @Autowired
@@ -48,7 +43,6 @@ public class UserServiceImpl implements UserService{
     public void registerUser(UserRegistrationDto userRegistrationDto) {
 
 
-
         Optional<Role> userRole = roleRepository.findById(userRegistrationDto.getRole().getId());
 
         User user = User.builder()
@@ -60,10 +54,9 @@ public class UserServiceImpl implements UserService{
 
         user.setPassword(passwordEncoder.encode(userRegistrationDto.getPassword()));
 
-        if(userRole.isEmpty()){
+        if (userRole.isEmpty()) {
             throw new RuntimeException();
-        }
-        else{
+        } else {
 //            user.setRole(Set.of(userRole.get()));
             user.setRole(userRole.get());
         }
@@ -119,6 +112,20 @@ public class UserServiceImpl implements UserService{
 //        return roles.getRole().name();
 //    }
 
+    /*
+    Method Signature: The method returns a GrantedAuthority object and takes a Role object as an argument.
+    Purpose: This method is responsible for mapping a Role object to a GrantedAuthority object. In Spring Security, GrantedAuthority represents a granted authority or role that a user possesses.
+    Role to Authority Mapping:
+    It extracts the role name from the Role object using role.getRole().name().
+    This assumes that the Role object has an Enum field representing the role name.
+    It creates a SimpleGrantedAuthority object using the role name extracted from the Role object.
+    This SimpleGrantedAuthority constructor expects a string representing the authority name, which in this case is the role name.
+    Return Value: The method returns a GrantedAuthority object, which represents the authority/role of a user.
+    This object will be used in Spring Security's user authentication and authorization process.
+    In summary, this method converts a Role object into a GrantedAuthority object, which is a fundamental
+    component of Spring Security's authentication and authorization mechanisms. It enables seamless integration
+    of application-specific roles with Spring Security's role-based access control.
+     */
 //    many-to-one
     private GrantedAuthority mapRoleToAuthority(Role role) {
         return new SimpleGrantedAuthority(role.getRole().name());

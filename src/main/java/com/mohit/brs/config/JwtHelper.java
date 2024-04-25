@@ -17,6 +17,22 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/*
+    This JwtHelper class provides utility methods for working with JWT tokens. Here's a brief explanation
+    of its main functionalities:
+
+    Generating Token: It can generate a JWT token for a given UserDetails object or a custom User object.
+    Retrieving Claims: It can retrieve claims (such as username or expiration date) from a JWT token.
+    Validating Token: It can validate whether a given JWT token is valid or not, based on a secret key
+    and user details.
+    Extracting Authentication Token: It can extract authentication token from a JWT token,
+    which can be used to create an authentication object.
+    Creating Token: It creates a JWT token with claims like role and subject, and signs it using the
+    HS256 algorithm.
+    Setting Token Expiration: The token validity period is set to 5 hours by default.
+    Handling Token Expiry: It checks whether a token has expired or not.
+ */
+
 @Component
 public class JwtHelper {
 
@@ -103,9 +119,9 @@ public class JwtHelper {
     }
 
     private String createToken(Map<String, Object> claims, Authentication authentication) {
-        String role =authentication.getAuthorities().stream()
+        String role = authentication.getAuthorities().stream()
                 .map(r -> r.getAuthority()).collect(Collectors.toSet()).iterator().next();
-        return Jwts.builder().claim("role",role).setSubject(authentication.getName()).setIssuedAt(new Date(System.currentTimeMillis()))
+        return Jwts.builder().claim("role", role).setSubject(authentication.getName()).setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5)))
                 .signWith(SignatureAlgorithm.HS256, secret).compact();
     }

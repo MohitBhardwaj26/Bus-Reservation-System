@@ -12,7 +12,7 @@ public interface UserService extends UserDetailsService {
 
     void registerUser(UserRegistrationDto userRegistrationDto);
 
-    void loginUser(String email,String password);
+    void loginUser(String email, String password);
 
     boolean isUserExists(String email);
 

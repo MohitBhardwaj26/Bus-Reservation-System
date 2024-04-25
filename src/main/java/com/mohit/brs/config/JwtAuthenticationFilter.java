@@ -19,6 +19,22 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+/*
+    The JwtAuthenticationFilter class plays a crucial role in a Spring Security setup where
+    JSON Web Tokens (JWT) are used for authentication. It intercepts incoming requests and checks
+    for the presence of a valid JWT in the request header.
+
+    Here's a general outline of its role:
+
+    Intercepting Requests: The filter intercepts incoming HTTP requests before they reach the endpoint controllers.
+    Extracting JWT: It extracts the JWT token from the request header.
+    Validating JWT: The filter validates the JWT token to ensure it's not expired, its signature is correct, etc.
+    This usually involves verifying the token against a secret key or public key.
+    Setting Authentication: If the JWT is valid, the filter sets the authentication information in the Spring
+    Security context, allowing the user to be authenticated for subsequent requests.
+    Passing Control: Finally, the filter allows the request to proceed to the next filter or the endpoint
+    controller.
+ */
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -32,6 +48,28 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     private UserService userService;
 
+    /*
+    he doFilterInternal method is a core method in a servlet filter. It's called by the servlet container (e.g., Tomcat) every time a request is made to the web application.
+
+    Here's a breakdown of its role:
+
+    Intercepting Requests: The method intercepts every incoming HTTP request to the web application
+    before it reaches the target servlet or resource.
+    Processing the Request: It performs operations on the request, such as extracting parameters,
+    headers, or cookies, and possibly modifying them.
+    Performing Filter Logic: The main logic of the filter is implemented here.
+    This can include tasks like authentication, logging, input validation, modifying
+    requests or responses, etc.
+    Calling the Next Filter or Servlet: After processing the request, the filter can either pass the request along the filter chain to the next filter or servlet, or it can choose to block the request and send a response directly.
+    Handling Exceptions: It may handle any exceptions that occur during its execution.
+
+    In the case of security filters, like the JWT authentication filter, the doFilterInternal method typically:
+
+    Extracts authentication information from the request (such as JWT token).
+    Validates the authentication information.
+    Sets up the security context if authentication is successful.
+    Passes the request to the next filter or servlet in the chain.
+     */
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
