@@ -28,15 +28,14 @@ public class User {
     @Column(name = "password")
     private String password;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
+//    @ManyToMany(fetch = FetchType.LAZY)
 //    @JoinTable(name = "user_role",
 //            joinColumns = {@JoinColumn(name = "email")},
 //            inverseJoinColumns = {@JoinColumn(name = "role_id")})
 //    private Set<Role> role;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id")
     private Role role;
-
 
 }

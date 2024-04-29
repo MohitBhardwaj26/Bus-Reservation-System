@@ -105,7 +105,12 @@ public class UserServiceImpl implements UserService {
 
     }
 
-//  @may-to-may
+    @Override
+    public User findByEmail(String username) {
+        return userRepository.findByEmail(username);
+    }
+
+//  @many-to-many
 //    public Collection<? extends GrantedAuthority> mapRolesToAuthorities(Set<Role> roles){
 //        return roles.stream().map(role -> new SimpleGrantedAuthority(role.toString())).collect(Collectors.toList());
 //
