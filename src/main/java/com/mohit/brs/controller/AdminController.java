@@ -1,8 +1,10 @@
 package com.mohit.brs.controller;
 
-import com.mohit.brs.model.entity.Role;
-import com.mohit.brs.model.entity.User;
+import com.mohit.brs.model.request.AgencyDTO;
+import com.mohit.brs.model.user.Role;
+import com.mohit.brs.model.user.User;
 import com.mohit.brs.model.request.ProfileDTO;
+import com.mohit.brs.service.AgencyService;
 import com.mohit.brs.service.ProfileService;
 import com.mohit.brs.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,9 @@ public class AdminController {
     @Autowired
     ProfileService profileService;
 
+    @Autowired
+    AgencyService agencyService;
+
     @PostMapping("/update")
     public ResponseEntity<String> updateProfile(@RequestBody ProfileDTO profileDTO, Principal principal) {
         String username = principal.getName();
@@ -35,6 +40,21 @@ public class AdminController {
 
         profileService.updateProfile(profileDTO, username);
         return ResponseEntity.ok("Profile updated successfully");
+    }
+
+    @PostMapping("/add-agency")
+    public ResponseEntity<String> addAgency(@RequestBody AgencyDTO agencyDTO, Principal principal){
+        String username = principal.getName();
+        User user = userService.findByEmail(username);
+
+        if(!isAdmin(principal)){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Only ADMIN can access this endpoint");
+        }
+
+        agencyService.addAgency(agencyDTO,user);
+
+        return ResponseEntity.ok("Agency Added successfully");
+
     }
 
     private boolean isAdmin(Principal principal) {

@@ -1,6 +1,6 @@
 package com.mohit.brs.service;
 
-import com.mohit.brs.model.entity.User;
+import com.mohit.brs.model.user.User;
 import com.mohit.brs.model.request.ProfileDTO;
 import com.mohit.brs.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

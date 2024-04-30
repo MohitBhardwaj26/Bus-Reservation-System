@@ -1,4 +1,4 @@
-package com.mohit.brs.model.entity;
+package com.mohit.brs.model.user;
 
 public enum UserRole {
     ROLE_USER,

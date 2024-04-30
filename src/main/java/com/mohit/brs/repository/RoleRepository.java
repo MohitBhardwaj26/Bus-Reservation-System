@@ -1,6 +1,6 @@
 package com.mohit.brs.repository;
 
-import com.mohit.brs.model.entity.Role;
+import com.mohit.brs.model.user.Role;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

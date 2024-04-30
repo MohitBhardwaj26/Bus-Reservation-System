@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProfileDTO {
-    private String firstName;
-    private String lastName;
-    private String phoneNumber;
+public class AgencyDTO {
+    private String code;
+    private String details;
+    private String name;
 }

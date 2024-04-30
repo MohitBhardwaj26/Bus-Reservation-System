@@ -1,8 +1,8 @@
 package com.mohit.brs.service;
 
 
-import com.mohit.brs.model.entity.Role;
-import com.mohit.brs.model.entity.User;
+import com.mohit.brs.model.user.Role;
+import com.mohit.brs.model.user.User;
 import com.mohit.brs.model.request.UserRegistrationDto;
 import com.mohit.brs.repository.RoleRepository;
 import com.mohit.brs.repository.UserRepository;

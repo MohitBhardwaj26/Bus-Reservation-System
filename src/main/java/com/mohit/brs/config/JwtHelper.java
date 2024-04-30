@@ -1,6 +1,6 @@
 package com.mohit.brs.config;
 
-import com.mohit.brs.model.entity.User;
+import com.mohit.brs.model.user.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

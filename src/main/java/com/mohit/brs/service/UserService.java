@@ -1,6 +1,6 @@
 package com.mohit.brs.service;
 
-import com.mohit.brs.model.entity.User;
+import com.mohit.brs.model.user.User;
 import com.mohit.brs.model.request.UserRegistrationDto;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
