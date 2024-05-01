@@ -21,7 +21,7 @@ public class Agency {
     @Id
     @Column(name = "agency_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long agency_id;
+    private Long agencyId;
 
     @Column(name = "code")
     String code;
