@@ -10,4 +10,5 @@ import org.springframework.stereotype.Repository;
 public interface AgencyRepository extends JpaRepository<Agency, Long> {
 
     Agency findByAgencyId(Long agencyId);
+    Agency findByCode(String code);
 }
