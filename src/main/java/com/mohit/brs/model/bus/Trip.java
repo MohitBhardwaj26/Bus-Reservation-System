@@ -1,5 +1,6 @@
 package com.mohit.brs.model.bus;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,10 +29,12 @@ public class Trip {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "source_stop_id")
+//    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Stop sourceStop;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dest_stop_id")
+//    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Stop destStop;
 
     @ManyToOne(fetch = FetchType.LAZY)

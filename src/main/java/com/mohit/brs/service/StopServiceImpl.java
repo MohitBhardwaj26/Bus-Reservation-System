@@ -6,6 +6,9 @@ import com.mohit.brs.repository.StopRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class StopServiceImpl implements StopService {
 
@@ -23,5 +26,11 @@ public class StopServiceImpl implements StopService {
 
         stopRepository.saveAndFlush(stop);
 
+    }
+
+    @Override
+    public List<Stop> getAllStops() {
+        List<Stop> allStops = stopRepository.findAll();
+        return allStops;
     }
 }

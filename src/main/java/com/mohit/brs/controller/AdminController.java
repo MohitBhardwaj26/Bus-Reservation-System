@@ -3,6 +3,7 @@ package com.mohit.brs.controller;
 import com.mohit.brs.model.bus.Agency;
 import com.mohit.brs.model.bus.Bus;
 import com.mohit.brs.model.bus.Stop;
+import com.mohit.brs.model.bus.Trip;
 import com.mohit.brs.model.request.*;
 import com.mohit.brs.model.user.Role;
 import com.mohit.brs.model.user.User;
@@ -51,6 +52,9 @@ public class AdminController {
 
     @Autowired
     TripService tripService;
+
+    @Autowired
+    TripScheduleService tripScheduleService;
 
     @PostMapping("/update")
     public ResponseEntity<String> updateProfile(@RequestBody ProfileDTO profileDTO, Principal principal) {
@@ -139,6 +143,19 @@ public class AdminController {
         tripService.addTrip(tripDTO);
 
         return ResponseEntity.ok("Trip Added Successfully");
+    }
+
+    @PostMapping("/add-tripSchedule")
+    public ResponseEntity<?> addTripSchedule(@RequestBody TripScheduleDto tripScheduleDto, Principal principal, @RequestParam Long tripId){
+        if(!isAdmin(principal)){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Only ADMIN can access this endpoint");
+        }
+
+        Trip trip = tripRepository.findById(tripId)
+                .orElseThrow(() -> new IllegalArgumentException("Trip not found"));
+
+        tripScheduleService.addTripScheduleById(tripScheduleDto , trip);
+        return ResponseEntity.ok("Trip Schedule added successfully");
     }
 
     private Stop sourceExists(String source) {

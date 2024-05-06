@@ -12,6 +12,8 @@ import com.mohit.brs.repository.TripRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class TripServiceImpl implements TripService {
 
@@ -51,5 +53,11 @@ public class TripServiceImpl implements TripService {
 
         tripRepository.saveAndFlush(trip);
 
+    }
+
+    @Override
+    public List<Trip> getALlTrips() {
+        List<Trip> allTrips = tripRepository.findAll();
+        return allTrips;
     }
 }
