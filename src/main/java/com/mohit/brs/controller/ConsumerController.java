@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-
 @RestController
 @RequestMapping(path = "/api/v1/consumer")
 public class ConsumerController {
@@ -44,18 +43,18 @@ public class ConsumerController {
     @Autowired
     TripScheduleService tripScheduleService;
 
-   @Autowired
-   TripScheduleRepository tripScheduleRepository;
+    @Autowired
+    TripScheduleRepository tripScheduleRepository;
 
-   @Autowired
-   TicketService ticketService;
+    @Autowired
+    TicketService ticketService;
 
-   @Autowired
-   TicketRepository ticketRepository;
+    @Autowired
+    TicketRepository ticketRepository;
 
 
     @GetMapping("/all-stops")
-    public ResponseEntity<?> fetchAllStops(Principal principal){
+    public ResponseEntity<?> fetchAllStops(Principal principal) {
 
         if (!isUser(principal)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Only USER can access this endpoint");
@@ -63,11 +62,11 @@ public class ConsumerController {
 
         List<Stop> allStops = stopService.getAllStops();
 
-        return new ResponseEntity<>(allStops,HttpStatus.OK);
+        return new ResponseEntity<>(allStops, HttpStatus.OK);
     }
 
     @GetMapping("/search-trip")
-    public ResponseEntity<?> searchTrip(@RequestBody SearchTripDTO searchTripDTO, Principal principal){
+    public ResponseEntity<?> searchTrip(@RequestBody SearchTripDTO searchTripDTO, Principal principal) {
 
         String source = searchTripDTO.getSource();
         String destination = searchTripDTO.getDestination();
@@ -76,11 +75,11 @@ public class ConsumerController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Only USER can access this endpoint");
         }
 
-        if(sourceExists(source) == null){
+        if (sourceExists(source) == null) {
             return ResponseEntity.badRequest().body("Source Not Present !!!");
         }
 
-        if(sourceExists(destination) == null){
+        if (sourceExists(destination) == null) {
             return ResponseEntity.badRequest().body("Destination Not Present !!!");
         }
 
@@ -88,7 +87,7 @@ public class ConsumerController {
 
         List<TripDTO> searchTripResult = new ArrayList<>();
 
-        for(Trip element:allTrips){
+        for (Trip element : allTrips) {
 
             Stop sourceName = element.getSourceStop();
             Stop destinationName = element.getDestStop();
@@ -96,7 +95,7 @@ public class ConsumerController {
             String source_check = sourceName.getName();
             String destination_check = destinationName.getName();
 
-            if(source_check.equals(source) && destination_check.equals(destination)){
+            if (source_check.equals(source) && destination_check.equals(destination)) {
                 TripDTO tripDTO = new TripDTO();
                 tripDTO.setFare(element.getFare());
                 tripDTO.setJourneyTime(element.getJourneyTime());
@@ -110,24 +109,24 @@ public class ConsumerController {
             }
 
         }
-        return new ResponseEntity<>(searchTripResult,HttpStatus.OK);
+        return new ResponseEntity<>(searchTripResult, HttpStatus.OK);
     }
 
     @GetMapping("/searchTripSchedule")
-    public ResponseEntity<?> filterTripScheduleBasedOnDate(Principal principal, @RequestParam String tripDate){
+    public ResponseEntity<?> filterTripScheduleBasedOnDate(Principal principal, @RequestParam String tripDate) {
 
         if (!isUser(principal)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Only USER can access this endpoint");
         }
 
-        List<?> tripScheduleList =  tripScheduleService.getTripScheduleListByDate(tripDate);
+        List<?> tripScheduleList = tripScheduleService.getTripScheduleListByDate(tripDate);
 
-        if(tripScheduleList == null){
+        if (tripScheduleList == null) {
             return ResponseEntity.badRequest().body("No Trip Schedule Present !!!");
         }
 
 
-        return new ResponseEntity<>(tripScheduleList , HttpStatus.OK);
+        return new ResponseEntity<>(tripScheduleList, HttpStatus.OK);
     }
 
     @PostMapping("/bookTicket")
@@ -148,38 +147,37 @@ public class ConsumerController {
             TripSchedule tripSchedule = tripScheduleRepository.findById(ticketDto.getTripScheduleId())
                     .orElseThrow(() -> new IllegalArgumentException("No Schedule for this Trip found !!"));
 
-            if(!ticketDto.getJourneyDate().equals(tripSchedule.getTripDate())){
+            if (!ticketDto.getJourneyDate().equals(tripSchedule.getTripDate())) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Please select correct trip date for this trip schedule");
 
             }
 
-            synchronized (tripSchedule) {
-                // Check if there are available seats
-                int availableSeats = tripSchedule.getAvailableSeats();
-                if (availableSeats <= 0) {
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No available seats for this trip schedule");
-                }
-
-
-                Ticket alreadyBooked = ticketRepository.findBySeatNumber(ticketDto.getSeatNumber());
-
-                if (alreadyBooked != null) {
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Seat is already Booked");
-                }
-
-                // Book the ticket
-                Ticket ticket = ticketService.bookTicket(ticketDto, passenger);
-
-                tripSchedule.getTicketsSold().add(ticket);
-
-                // Update the available seats
-                tripSchedule.setAvailableSeats(availableSeats - 1);
-
-                // Save the changes to tripSchedule
-                tripScheduleRepository.save(tripSchedule);
-
-                return new ResponseEntity<>(ticketDto, HttpStatus.OK);
+            // Check if there are available seats
+            int availableSeats = tripSchedule.getAvailableSeats();
+            if (availableSeats <= 0) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No available seats for this trip schedule");
             }
+
+
+            Ticket alreadyBooked = ticketRepository.findBySeatNumber(ticketDto.getSeatNumber());
+
+            if (alreadyBooked != null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Seat is already Booked");
+            }
+
+            // Book the ticket
+            Ticket ticket = ticketService.bookTicket(ticketDto, passenger);
+
+            tripSchedule.getTicketsSold().add(ticket);
+
+            // Update the available seats
+            tripSchedule.setAvailableSeats(availableSeats - 1);
+
+            // Save the changes to tripSchedule
+            tripScheduleRepository.save(tripSchedule);
+
+            return new ResponseEntity<>(ticketDto, HttpStatus.OK);
+
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
@@ -187,7 +185,6 @@ public class ConsumerController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while booking the ticket " + e.getMessage());
         }
     }
-
 
 
     private Stop sourceExists(String source) {
@@ -209,7 +206,7 @@ public class ConsumerController {
 
 
         // Check if user has ADMIN role
-        if(role != null && role.getRole().toString().equalsIgnoreCase("ROLE_USER")){
+        if (role != null && role.getRole().toString().equalsIgnoreCase("ROLE_USER")) {
             return true;
         }
         return false;
