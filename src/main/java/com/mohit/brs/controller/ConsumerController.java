@@ -13,7 +13,6 @@ import com.mohit.brs.repository.StopRepository;
 import com.mohit.brs.repository.TicketRepository;
 import com.mohit.brs.repository.TripScheduleRepository;
 import com.mohit.brs.service.*;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+
 
 
 @RestController
@@ -165,7 +164,7 @@ public class ConsumerController {
                 Ticket alreadyBooked = ticketRepository.findBySeatNumber(ticketDto.getSeatNumber());
 
                 if (alreadyBooked != null) {
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User has already booked a ticket for this trip schedule");
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Seat is already Booked");
                 }
 
                 // Book the ticket
