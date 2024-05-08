@@ -1,16 +1,19 @@
 package com.mohit.brs.controller;
 
 import com.mohit.brs.model.bus.Stop;
+import com.mohit.brs.model.bus.Ticket;
 import com.mohit.brs.model.bus.Trip;
+import com.mohit.brs.model.bus.TripSchedule;
 import com.mohit.brs.model.request.SearchTripDTO;
+import com.mohit.brs.model.request.TicketDto;
 import com.mohit.brs.model.request.TripDTO;
 import com.mohit.brs.model.user.Role;
 import com.mohit.brs.model.user.User;
 import com.mohit.brs.repository.StopRepository;
-import com.mohit.brs.service.StopService;
-import com.mohit.brs.service.TripScheduleService;
-import com.mohit.brs.service.TripService;
-import com.mohit.brs.service.UserService;
+import com.mohit.brs.repository.TicketRepository;
+import com.mohit.brs.repository.TripScheduleRepository;
+import com.mohit.brs.service.*;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 
 @RestController
@@ -40,6 +44,16 @@ public class ConsumerController {
 
     @Autowired
     TripScheduleService tripScheduleService;
+
+   @Autowired
+   TripScheduleRepository tripScheduleRepository;
+
+   @Autowired
+   TicketService ticketService;
+
+   @Autowired
+   TicketRepository ticketRepository;
+
 
     @GetMapping("/all-stops")
     public ResponseEntity<?> fetchAllStops(Principal principal){
@@ -109,9 +123,73 @@ public class ConsumerController {
 
         List<?> tripScheduleList =  tripScheduleService.getTripScheduleListByDate(tripDate);
 
+        if(tripScheduleList == null){
+            return ResponseEntity.badRequest().body("No Trip Schedule Present !!!");
+        }
+
 
         return new ResponseEntity<>(tripScheduleList , HttpStatus.OK);
     }
+
+    @PostMapping("/bookTicket")
+    public ResponseEntity<?> bookTicketForTrip(Principal principal, @RequestBody TicketDto ticketDto) {
+        try {
+            if (!isUser(principal)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Only USER can access this endpoint");
+            }
+
+            // Retrieve passenger, trip schedule, and other details from the request
+            User passenger = userService.findByEmail(ticketDto.getPassengerEmailId());
+
+
+            if (passenger == null) {
+                return ResponseEntity.badRequest().body("User is Not Present !!!!");
+            }
+
+            TripSchedule tripSchedule = tripScheduleRepository.findById(ticketDto.getTripScheduleId())
+                    .orElseThrow(() -> new IllegalArgumentException("No Schedule for this Trip found !!"));
+
+            if(!ticketDto.getJourneyDate().equals(tripSchedule.getTripDate())){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Please select correct trip date for this trip schedule");
+
+            }
+
+            synchronized (tripSchedule) {
+                // Check if there are available seats
+                int availableSeats = tripSchedule.getAvailableSeats();
+                if (availableSeats <= 0) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No available seats for this trip schedule");
+                }
+
+
+                Ticket alreadyBooked = ticketRepository.findBySeatNumber(ticketDto.getSeatNumber());
+
+                if (alreadyBooked != null) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User has already booked a ticket for this trip schedule");
+                }
+
+                // Book the ticket
+                Ticket ticket = ticketService.bookTicket(ticketDto, passenger);
+
+                tripSchedule.getTicketsSold().add(ticket);
+
+                // Update the available seats
+                tripSchedule.setAvailableSeats(availableSeats - 1);
+
+                // Save the changes to tripSchedule
+                tripScheduleRepository.save(tripSchedule);
+
+                return new ResponseEntity<>(ticketDto, HttpStatus.OK);
+            }
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            // Handle any exceptions and return an appropriate error response
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while booking the ticket " + e.getMessage());
+        }
+    }
+
+
 
     private Stop sourceExists(String source) {
 

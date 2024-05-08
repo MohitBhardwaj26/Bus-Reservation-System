@@ -16,11 +16,9 @@ import java.util.Set;
 @Builder
 public class TripScheduleDto {
 
-    private Integer availableSeats;
 
     private String tripDate;
 
-    private Trip tripDetail;
 
     private Set<Ticket> ticketsSold;
 

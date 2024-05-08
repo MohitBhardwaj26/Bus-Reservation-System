@@ -2,6 +2,7 @@ package com.mohit.brs.model.request;
 
 import com.mohit.brs.model.bus.TripSchedule;
 import com.mohit.brs.model.user.User;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,8 +20,9 @@ public class TicketDto {
 
     private String journeyDate;
 
-    private User passenger;
+    private String passengerEmailId; // Assuming this is the ID of the passenger
 
-    private TripSchedule tripSchedule;
+    private Long tripScheduleId;
+
 
 }

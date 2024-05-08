@@ -1,7 +1,10 @@
 package com.mohit.brs.model.user;
 
+import com.mohit.brs.model.bus.Ticket;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.Objects;
 
 
 @Data
@@ -34,8 +37,26 @@ public class User {
 //            inverseJoinColumns = {@JoinColumn(name = "role_id")})
 //    private Set<Role> role;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "role_id")
     private Role role;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(email, user.email) &&
+                Objects.equals(firstName, user.firstName) &&
+                Objects.equals(lastName, user.lastName) &&
+                Objects.equals(phoneNumber, user.phoneNumber) &&
+                Objects.equals(password, user.password) &&
+                Objects.equals(role, user.role);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(email, firstName, lastName, phoneNumber, password, role);
+    }
 
 }

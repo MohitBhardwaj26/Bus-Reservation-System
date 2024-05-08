@@ -1,5 +1,6 @@
 package com.mohit.brs.model.bus;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mohit.brs.model.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -33,11 +34,13 @@ public class Agency {
     String name;
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "owner_user_id")
+    @JsonIgnore
     private User owner;
 
     @OneToMany(mappedBy = "agency", cascade = CascadeType.ALL)
+    @JsonIgnore
     private Set<Bus> buses;
 
 
